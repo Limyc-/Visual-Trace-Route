@@ -23,7 +23,6 @@ namespace VisualTraceRoute
 {
 	public partial class TraceForm : Form
 	{
-		private Dictionary<string, Assembly> libraries = new Dictionary<string, Assembly>();
 		private GMapOverlay pointOverlay;
 		private GMapOverlay routeOverlay;
 		private IPAddress targetAddress;
@@ -41,51 +40,50 @@ namespace VisualTraceRoute
 			pointOverlay = new GMapOverlay(map, "Points");
 			routeOverlay = new GMapOverlay(map, "Routes");
 
-			mapLC.BackColor = Color.FromArgb(187, 208, 237);
+			mapLc.BackColor = Color.FromArgb(187, 208, 237);
 		}
 
-		private void loadMap_Click(object sender, EventArgs e)
-		{
-			mapLC.Active = true;
-			mapLC.Visible = true;
-			loadMapBtn.Enabled = false;
-			targetTb.Enabled = false;
-			map.Enabled = false;
-
-			traceInfoLv.Items.Clear();
-			map.Overlays.Clear();
-			pointOverlay.Markers.Clear();
-			routeOverlay.Polygons.Clear();
-
-			map.Position = new PointLatLng(0, 0);
-			map.Zoom = map.MinZoom;
-
-			CheckForIllegalCrossThreadCalls = true;
-			Thread tracert = new Thread(() => TraceRoute(targetAddress));
-			tracert.IsBackground = true;
-			tracert.Start();
-		}
-
-		private void destinationTb_TextChanged(object sender, EventArgs e)
+		private void addressTb_TextChanged(object sender, EventArgs e)
 		{
 			loadMapBtn.Enabled = false;
-			addressLC.Visible = true;
-			addressLC.Active = true;
+			addressLc.Visible = true;
+			addressLc.Active = true;
 
-			if (backgroundWorker.IsBusy)
+			if (dnsWorker.IsBusy)
 			{
-				backgroundWorker.CancelAsync();
+				dnsWorker.CancelAsync();
 			}
 
-			while (backgroundWorker.IsBusy)
+			while (dnsWorker.IsBusy)
 			{
 				Application.DoEvents();
 			}
 
-			backgroundWorker.RunWorkerAsync((TextBox)sender);
+			dnsWorker.RunWorkerAsync((TextBox)sender);
 		}
 
-		private void backgroundWorker_DoWork(object sender, DoWorkEventArgs e)
+		private void cancelBtn_Click(object sender, EventArgs e)
+		{
+			if (traceWorker.IsBusy)
+			{
+				traceWorker.CancelAsync();
+			}
+		}
+
+		private void loadMap_Click(object sender, EventArgs e)
+		{
+			mapLc.Active = true;
+			mapLc.Visible = true;
+			loadMapBtn.Enabled = false;
+			addressTb.Enabled = false;
+			map.Enabled = false;
+
+			ResetMap();
+
+			traceWorker.RunWorkerAsync(this.targetAddress);
+		}
+
+		private void dnsWorker_DoWork(object sender, DoWorkEventArgs e)
 		{
 			var tb = (TextBox)e.Argument;
 			if (IsValidAddress(tb.Text, out targetAddress))
@@ -99,20 +97,36 @@ namespace VisualTraceRoute
 
 		}
 
-		private void backgroundWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		private void dnsWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
 		{
 			if ((bool)e.Result)
 			{
-				targetTb.ForeColor = Color.Black;
+				addressTb.ForeColor = Color.Black;
 				loadMapBtn.Enabled = true;
 			}
 			else
 			{
-				targetTb.ForeColor = Color.Red;
+				addressTb.ForeColor = Color.Red;
 				loadMapBtn.Enabled = false;
 			}
-			addressLC.Visible = false;
-			addressLC.Active = false;
+			addressLc.Visible = false;
+			addressLc.Active = false;
+		}
+
+		private void traceWorker_DoWork(object sender, DoWorkEventArgs e)
+		{
+			TraceRoute((IPAddress)e.Argument);
+		}
+
+		private void traceWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			mapLc.Visible = false;
+			mapLc.Active = false;
+			map.Enabled = true;
+			loadMapBtn.Enabled = true;
+			addressTb.Enabled = true;
+
+			CenterMap("Points");
 		}
 
 		private void AddItem(ListViewItem item)
@@ -126,15 +140,7 @@ namespace VisualTraceRoute
 
 		private void CenterMap(String overlayId)
 		{
-			Invoke(new Action(() =>
-			{
-				mapLC.Visible = false;
-				mapLC.Active = false;
-				map.ZoomAndCenterMarkers(overlayId);
-				map.Enabled = true;
-				loadMapBtn.Enabled = true;
-				targetTb.Enabled = true;
-			}));
+			map.ZoomAndCenterMarkers(overlayId);
 		}
 
 		private bool IsValidAddress(String target, out IPAddress ipAddress)
@@ -142,24 +148,35 @@ namespace VisualTraceRoute
 			ipAddress = IPAddress.None;
 			if (!IPAddress.TryParse(target, out ipAddress))
 			{
-				IPAddress[] addresses = null;
+				IPAddress[] hostAddressList = null;
 				try
 				{
-					addresses = Dns.GetHostAddresses(target);
+					hostAddressList = Dns.GetHostAddresses(target);
 				}
-				catch
-				{
+				catch (System.Net.Sockets.SocketException) { }
 
-				}
-				if (addresses != null)
+				if (hostAddressList != null)
 				{
-					ipAddress = addresses[0];
+					ipAddress = hostAddressList[0];
 					return true;
 				}
-
 			}
 			return false;
 
+		}
+
+		private void ResetMap()
+		{
+			Invoke(new Action(() =>
+			{
+				traceInfoLv.Items.Clear();
+				map.Overlays.Clear();
+				pointOverlay.Markers.Clear();
+				routeOverlay.Polygons.Clear();
+
+				map.Position = new PointLatLng(0, 0);
+				map.Zoom = map.MinZoom;
+			}));
 		}
 
 		private void TraceRoute(IPAddress target)
@@ -180,74 +197,80 @@ namespace VisualTraceRoute
 
 				for (int i = 0; i < maxHops; i++)
 				{
-					stopWatch.Reset();
-					stopWatch.Start();
-					PingReply pingReply = pingSender.Send(ipAddress, 5000, new byte[32], pingOptions);
-					stopWatch.Stop();
-
-					ListViewItem item = new ListViewItem((i + 1).ToString());
-
-					if (pingReply.Status != IPStatus.TimedOut)
+					if (!traceWorker.CancellationPending)
 					{
-						GeoIpData data;
-						if (i == 0)
+						stopWatch.Reset();
+						stopWatch.Start();
+						PingReply pingReply = pingSender.Send(ipAddress, 5000, new byte[32], pingOptions);
+						stopWatch.Stop();
+
+						ListViewItem item = new ListViewItem((i + 1).ToString());
+
+						if (pingReply.Status != IPStatus.TimedOut)
 						{
-							data = GeoIp.GetLocationData();
-							item.SubItems.Add(Dns.GetHostName());
-							item.SubItems.Add(pingReply.Address.ToString());
+							GeoIpData data;
+							if (i == 0)
+							{
+								data = GeoIp.GetLocationData();
+								item.SubItems.Add(Dns.GetHostName());
+								item.SubItems.Add(pingReply.Address.ToString());
+							}
+							else
+							{
+								data = GeoIp.GetLocationData(pingReply.Address.ToString());
+								item.SubItems.Add(data.Hostname);
+								item.SubItems.Add(data.Ip.ToString());
+							}
+							item.SubItems.Add(stopWatch.ElapsedMilliseconds + "ms");
+							item.SubItems.Add(data.Point.Lat.ToString());
+							item.SubItems.Add(data.Point.Lng.ToString());
+							item.SubItems.Add(data.City);
+							item.SubItems.Add(data.Region);
+							item.SubItems.Add(data.Country);
+
+							current = data.Point;
+							if (pingReply.Status == IPStatus.Success)
+							{
+								PlotPoint(data.Point, -1);
+							}
+							else
+							{
+								PlotPoint(data.Point, i + 1);
+							}
+
+							if (last.Lat != -1 && !current.Equals(last))
+							{
+								PlotRoute(last, current, stopWatch.ElapsedMilliseconds);
+							}
 						}
 						else
 						{
-							data = GeoIp.GetLocationData(pingReply.Address.ToString());
-							item.SubItems.Add(data.Hostname);
-							item.SubItems.Add(data.Ip.ToString());
+							item.SubItems.Add("-");
+							item.SubItems.Add("Timeout");
+							item.SubItems.Add("*");
+							item.SubItems.Add("-");
+							item.SubItems.Add("-");
+							item.SubItems.Add("-");
+							item.SubItems.Add("-");
+							item.SubItems.Add("-");
 						}
-						item.SubItems.Add(stopWatch.ElapsedMilliseconds + "ms");
-						item.SubItems.Add(data.Point.Lat.ToString());
-						item.SubItems.Add(data.Point.Lng.ToString());
-						item.SubItems.Add(data.City);
-						item.SubItems.Add(data.Region);
-						item.SubItems.Add(data.Country);
+						AddItem(item);
+						//traceResults.AppendLine(string.Format("{0}\t{1} ms\t{2}", i, stopWatch.ElapsedMilliseconds, pingReply.Address));
 
-						current = data.Point;
 						if (pingReply.Status == IPStatus.Success)
 						{
-							PlotPoint(data.Point, -1);
+							break;
 						}
-						else
-						{
-							PlotPoint(data.Point, i + 1);
-						}
-
-						if (last.Lat != -1 && !current.Equals(last))
-						{
-							PlotRoute(last, current, stopWatch.ElapsedMilliseconds);
-						}
+						last = current;
+						pingOptions.Ttl++;
 					}
 					else
 					{
-						item.SubItems.Add("-");
-						item.SubItems.Add("timed out");
-						item.SubItems.Add("*");
-						item.SubItems.Add("-");
-						item.SubItems.Add("-");
-						item.SubItems.Add("-");
-						item.SubItems.Add("-");
-						item.SubItems.Add("-");
-					}
-					AddItem(item);
-					//traceResults.AppendLine(string.Format("{0}\t{1} ms\t{2}", i, stopWatch.ElapsedMilliseconds, pingReply.Address));
-
-					if (pingReply.Status == IPStatus.Success)
-					{
+						ResetMap();
 						break;
 					}
-					last = current;
-					pingOptions.Ttl++;
 				}
 			}
-			CenterMap("Points");
-
 		}
 
 		private void PlotPoint(PointLatLng current, int hop)

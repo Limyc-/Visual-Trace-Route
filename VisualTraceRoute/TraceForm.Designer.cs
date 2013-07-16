@@ -40,11 +40,13 @@
 			this.city = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.region = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.country = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-			this.targetTb = new System.Windows.Forms.TextBox();
+			this.addressTb = new System.Windows.Forms.TextBox();
 			this.destinationLbl = new System.Windows.Forms.Label();
-			this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-			this.addressLC = new MRG.Controls.UI.LoadingCircle();
-			this.mapLC = new MRG.Controls.UI.LoadingCircle();
+			this.dnsWorker = new System.ComponentModel.BackgroundWorker();
+			this.addressLc = new MRG.Controls.UI.LoadingCircle();
+			this.mapLc = new MRG.Controls.UI.LoadingCircle();
+			this.traceWorker = new System.ComponentModel.BackgroundWorker();
+			this.cancelBtn = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// map
@@ -74,7 +76,7 @@
 			// loadMapBtn
 			// 
 			this.loadMapBtn.Enabled = false;
-			this.loadMapBtn.Location = new System.Drawing.Point(669, 700);
+			this.loadMapBtn.Location = new System.Drawing.Point(544, 700);
 			this.loadMapBtn.Name = "loadMapBtn";
 			this.loadMapBtn.Size = new System.Drawing.Size(119, 28);
 			this.loadMapBtn.TabIndex = 2;
@@ -148,13 +150,13 @@
 			this.country.Text = "Country";
 			this.country.Width = 106;
 			// 
-			// targetTb
+			// addressTb
 			// 
-			this.targetTb.Location = new System.Drawing.Point(139, 705);
-			this.targetTb.Name = "targetTb";
-			this.targetTb.Size = new System.Drawing.Size(497, 20);
-			this.targetTb.TabIndex = 5;
-			this.targetTb.TextChanged += new System.EventHandler(this.destinationTb_TextChanged);
+			this.addressTb.Location = new System.Drawing.Point(139, 705);
+			this.addressTb.Name = "addressTb";
+			this.addressTb.Size = new System.Drawing.Size(372, 20);
+			this.addressTb.TabIndex = 5;
+			this.addressTb.TextChanged += new System.EventHandler(this.addressTb_TextChanged);
 			// 
 			// destinationLbl
 			// 
@@ -165,57 +167,77 @@
 			this.destinationLbl.TabIndex = 6;
 			this.destinationLbl.Text = "Hostname or IP Address";
 			// 
-			// backgroundWorker
+			// dnsWorker
 			// 
-			this.backgroundWorker.WorkerSupportsCancellation = true;
-			this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
-			this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
+			this.dnsWorker.WorkerSupportsCancellation = true;
+			this.dnsWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.dnsWorker_DoWork);
+			this.dnsWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.dnsWorker_RunWorkerCompleted);
 			// 
-			// addressLC
+			// addressLc
 			// 
-			this.addressLC.Active = false;
-			this.addressLC.Color = System.Drawing.Color.DarkGray;
-			this.addressLC.InnerCircleRadius = 6;
-			this.addressLC.Location = new System.Drawing.Point(642, 705);
-			this.addressLC.Name = "addressLC";
-			this.addressLC.NumberSpoke = 9;
-			this.addressLC.OuterCircleRadius = 7;
-			this.addressLC.RotationSpeed = 100;
-			this.addressLC.Size = new System.Drawing.Size(21, 20);
-			this.addressLC.SpokeThickness = 4;
-			this.addressLC.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.Firefox;
-			this.addressLC.TabIndex = 7;
-			this.addressLC.Text = "loadingCircle";
-			this.addressLC.Visible = false;
+			this.addressLc.Active = false;
+			this.addressLc.Color = System.Drawing.Color.DarkGray;
+			this.addressLc.InnerCircleRadius = 6;
+			this.addressLc.Location = new System.Drawing.Point(517, 705);
+			this.addressLc.Name = "addressLc";
+			this.addressLc.NumberSpoke = 9;
+			this.addressLc.OuterCircleRadius = 7;
+			this.addressLc.RotationSpeed = 100;
+			this.addressLc.Size = new System.Drawing.Size(21, 20);
+			this.addressLc.SpokeThickness = 4;
+			this.addressLc.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.Firefox;
+			this.addressLc.TabIndex = 7;
+			this.addressLc.Text = "loadingCircle";
+			this.addressLc.Visible = false;
 			// 
-			// mapLC
+			// mapLc
 			// 
-			this.mapLC.Active = false;
-			this.mapLC.BackColor = System.Drawing.Color.Transparent;
-			this.mapLC.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-			this.mapLC.Color = System.Drawing.Color.DarkGray;
-			this.mapLC.InnerCircleRadius = 12;
-			this.mapLC.Location = new System.Drawing.Point(750, 453);
-			this.mapLC.Name = "mapLC";
-			this.mapLC.NumberSpoke = 9;
-			this.mapLC.OuterCircleRadius = 14;
-			this.mapLC.RotationSpeed = 100;
-			this.mapLC.Size = new System.Drawing.Size(50, 41);
-			this.mapLC.SpokeThickness = 8;
-			this.mapLC.TabIndex = 8;
-			this.mapLC.Text = "mapLC";
-			this.mapLC.Visible = false;
+			this.mapLc.Active = false;
+			this.mapLc.BackColor = System.Drawing.Color.Transparent;
+			this.mapLc.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+			this.mapLc.Color = System.Drawing.Color.DarkGray;
+			this.mapLc.InnerCircleRadius = 5;
+			this.mapLc.Location = new System.Drawing.Point(750, 453);
+			this.mapLc.Name = "mapLc";
+			this.mapLc.NumberSpoke = 12;
+			this.mapLc.OuterCircleRadius = 11;
+			this.mapLc.RotationSpeed = 100;
+			this.mapLc.Size = new System.Drawing.Size(50, 41);
+			this.mapLc.SpokeThickness = 2;
+			this.mapLc.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.MacOSX;
+			this.mapLc.TabIndex = 8;
+			this.mapLc.Text = "mapLC";
+			this.mapLc.Visible = false;
+			// 
+			// traceWorker
+			// 
+			this.traceWorker.WorkerSupportsCancellation = true;
+			this.traceWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.traceWorker_DoWork);
+			this.traceWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.traceWorker_RunWorkerCompleted);
+			// 
+			// cancelBtn
+			// 
+			this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.cancelBtn.Location = new System.Drawing.Point(669, 700);
+			this.cancelBtn.Name = "cancelBtn";
+			this.cancelBtn.Size = new System.Drawing.Size(119, 28);
+			this.cancelBtn.TabIndex = 9;
+			this.cancelBtn.Text = "Cancel";
+			this.cancelBtn.UseVisualStyleBackColor = true;
+			this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click);
 			// 
 			// TraceForm
 			// 
 			this.AcceptButton = this.loadMapBtn;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.cancelBtn;
 			this.ClientSize = new System.Drawing.Size(800, 732);
-			this.Controls.Add(this.mapLC);
-			this.Controls.Add(this.addressLC);
+			this.Controls.Add(this.cancelBtn);
+			this.Controls.Add(this.mapLc);
+			this.Controls.Add(this.addressLc);
 			this.Controls.Add(this.destinationLbl);
-			this.Controls.Add(this.targetTb);
+			this.Controls.Add(this.addressTb);
 			this.Controls.Add(this.traceInfoLv);
 			this.Controls.Add(this.loadMapBtn);
 			this.Controls.Add(this.map);
@@ -240,11 +262,13 @@
 		private System.Windows.Forms.ColumnHeader city;
 		private System.Windows.Forms.ColumnHeader region;
 		private System.Windows.Forms.ColumnHeader country;
-		private System.Windows.Forms.TextBox targetTb;
+		private System.Windows.Forms.TextBox addressTb;
 		private System.Windows.Forms.Label destinationLbl;
-		private System.ComponentModel.BackgroundWorker backgroundWorker;
-		private MRG.Controls.UI.LoadingCircle addressLC;
-		private MRG.Controls.UI.LoadingCircle mapLC;
+		private System.ComponentModel.BackgroundWorker dnsWorker;
+		private MRG.Controls.UI.LoadingCircle addressLc;
+		private MRG.Controls.UI.LoadingCircle mapLc;
+		private System.ComponentModel.BackgroundWorker traceWorker;
+		private System.Windows.Forms.Button cancelBtn;
 	}
 }
 
