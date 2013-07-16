@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>VisualTraceRoute</RootNamespace>
     <AssemblyName>VisualTraceRoute</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -34,12 +35,16 @@
   <ItemGroup>
     <Reference Include="GMap.NET.Core">
       <HintPath>..\..\..\..\..\C-Sharp Libraries\GMap.NET.WindowsForms\GMap.NET.Core.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="GMap.NET.WindowsForms">
       <HintPath>..\..\..\..\..\C-Sharp Libraries\GMap.NET.WindowsForms\GMap.NET.WindowsForms.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="MRG.Controls.UI">
-      <HintPath>..\..\..\..\..\C-Sharp Libraries\Spinning Progress Indicator\MRG.Controls.UI.dll</HintPath>
+    <Reference Include="MRG.Controls.UI, Version=1.0.2601.14400, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\C-Sharp Libraries\Loading Circle\MRG.Controls.UI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EmbeddedAssembly.cs" />
     <Compile Include="TraceForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -89,6 +95,16 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GMap.NET.Core.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="GMap.NET.WindowsForms.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MRG.Controls.UI.dll" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

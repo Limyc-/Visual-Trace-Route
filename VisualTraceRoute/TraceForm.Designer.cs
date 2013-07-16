@@ -43,7 +43,8 @@
 			this.targetTb = new System.Windows.Forms.TextBox();
 			this.destinationLbl = new System.Windows.Forms.Label();
 			this.backgroundWorker = new System.ComponentModel.BackgroundWorker();
-			this.loadingCircle = new MRG.Controls.UI.LoadingCircle();
+			this.addressLC = new MRG.Controls.UI.LoadingCircle();
+			this.mapLC = new MRG.Controls.UI.LoadingCircle();
 			this.SuspendLayout();
 			// 
 			// map
@@ -170,29 +171,49 @@
 			this.backgroundWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_DoWork);
 			this.backgroundWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_RunWorkerCompleted);
 			// 
-			// loadingCircle
+			// addressLC
 			// 
-			this.loadingCircle.Active = false;
-			this.loadingCircle.Color = System.Drawing.Color.DarkGray;
-			this.loadingCircle.InnerCircleRadius = 6;
-			this.loadingCircle.Location = new System.Drawing.Point(642, 705);
-			this.loadingCircle.Name = "loadingCircle";
-			this.loadingCircle.NumberSpoke = 9;
-			this.loadingCircle.OuterCircleRadius = 7;
-			this.loadingCircle.RotationSpeed = 100;
-			this.loadingCircle.Size = new System.Drawing.Size(21, 20);
-			this.loadingCircle.SpokeThickness = 4;
-			this.loadingCircle.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.Firefox;
-			this.loadingCircle.TabIndex = 7;
-			this.loadingCircle.Text = "loadingCircle";
-			this.loadingCircle.Visible = false;
+			this.addressLC.Active = false;
+			this.addressLC.Color = System.Drawing.Color.DarkGray;
+			this.addressLC.InnerCircleRadius = 6;
+			this.addressLC.Location = new System.Drawing.Point(642, 705);
+			this.addressLC.Name = "addressLC";
+			this.addressLC.NumberSpoke = 9;
+			this.addressLC.OuterCircleRadius = 7;
+			this.addressLC.RotationSpeed = 100;
+			this.addressLC.Size = new System.Drawing.Size(21, 20);
+			this.addressLC.SpokeThickness = 4;
+			this.addressLC.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.Firefox;
+			this.addressLC.TabIndex = 7;
+			this.addressLC.Text = "loadingCircle";
+			this.addressLC.Visible = false;
+			// 
+			// mapLC
+			// 
+			this.mapLC.Active = false;
+			this.mapLC.BackColor = System.Drawing.Color.Transparent;
+			this.mapLC.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+			this.mapLC.Color = System.Drawing.Color.DarkGray;
+			this.mapLC.InnerCircleRadius = 12;
+			this.mapLC.Location = new System.Drawing.Point(750, 453);
+			this.mapLC.Name = "mapLC";
+			this.mapLC.NumberSpoke = 9;
+			this.mapLC.OuterCircleRadius = 14;
+			this.mapLC.RotationSpeed = 100;
+			this.mapLC.Size = new System.Drawing.Size(50, 41);
+			this.mapLC.SpokeThickness = 8;
+			this.mapLC.TabIndex = 8;
+			this.mapLC.Text = "mapLC";
+			this.mapLC.Visible = false;
 			// 
 			// TraceForm
 			// 
+			this.AcceptButton = this.loadMapBtn;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 732);
-			this.Controls.Add(this.loadingCircle);
+			this.Controls.Add(this.mapLC);
+			this.Controls.Add(this.addressLC);
 			this.Controls.Add(this.destinationLbl);
 			this.Controls.Add(this.targetTb);
 			this.Controls.Add(this.traceInfoLv);
@@ -222,7 +243,8 @@
 		private System.Windows.Forms.TextBox targetTb;
 		private System.Windows.Forms.Label destinationLbl;
 		private System.ComponentModel.BackgroundWorker backgroundWorker;
-		private MRG.Controls.UI.LoadingCircle loadingCircle;
+		private MRG.Controls.UI.LoadingCircle addressLC;
+		private MRG.Controls.UI.LoadingCircle mapLC;
 	}
 }
 

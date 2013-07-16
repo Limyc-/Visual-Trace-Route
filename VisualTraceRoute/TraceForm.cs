@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
+using System.Drawing.Drawing2D;
+using System.IO;
+using System.Net;
+using System.Net.NetworkInformation;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Security.Permissions;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GMap.NET;
 using GMap.NET.WindowsForms;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Diagnostics;
-using System.Threading;
-using System.Drawing.Drawing2D;
 
 //http://greatmaps.codeplex.com/
 
@@ -21,6 +23,7 @@ namespace VisualTraceRoute
 {
 	public partial class TraceForm : Form
 	{
+		private Dictionary<string, Assembly> libraries = new Dictionary<string, Assembly>();
 		private GMapOverlay pointOverlay;
 		private GMapOverlay routeOverlay;
 		private IPAddress targetAddress;
@@ -37,11 +40,18 @@ namespace VisualTraceRoute
 
 			pointOverlay = new GMapOverlay(map, "Points");
 			routeOverlay = new GMapOverlay(map, "Routes");
+
+			mapLC.BackColor = Color.FromArgb(187, 208, 237);
 		}
 
 		private void loadMap_Click(object sender, EventArgs e)
 		{
+			mapLC.Active = true;
+			mapLC.Visible = true;
+			loadMapBtn.Enabled = false;
+			targetTb.Enabled = false;
 			map.Enabled = false;
+
 			traceInfoLv.Items.Clear();
 			map.Overlays.Clear();
 			pointOverlay.Markers.Clear();
@@ -59,8 +69,8 @@ namespace VisualTraceRoute
 		private void destinationTb_TextChanged(object sender, EventArgs e)
 		{
 			loadMapBtn.Enabled = false;
-			loadingCircle.Visible = true;
-			loadingCircle.Active = true;
+			addressLC.Visible = true;
+			addressLC.Active = true;
 
 			if (backgroundWorker.IsBusy)
 			{
@@ -101,8 +111,8 @@ namespace VisualTraceRoute
 				targetTb.ForeColor = Color.Red;
 				loadMapBtn.Enabled = false;
 			}
-			loadingCircle.Visible = false;
-			loadingCircle.Active = false;
+			addressLC.Visible = false;
+			addressLC.Active = false;
 		}
 
 		private void AddItem(ListViewItem item)
@@ -118,8 +128,12 @@ namespace VisualTraceRoute
 		{
 			Invoke(new Action(() =>
 			{
+				mapLC.Visible = false;
+				mapLC.Active = false;
 				map.ZoomAndCenterMarkers(overlayId);
 				map.Enabled = true;
+				loadMapBtn.Enabled = true;
+				targetTb.Enabled = true;
 			}));
 		}
 
@@ -233,7 +247,7 @@ namespace VisualTraceRoute
 				}
 			}
 			CenterMap("Points");
-			//return traceResults.ToString();
+
 		}
 
 		private void PlotPoint(PointLatLng current, int hop)
