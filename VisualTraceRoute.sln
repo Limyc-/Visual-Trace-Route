@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualTraceRoute", "VisualTracert\VisualTraceRoute.csproj", "{27FB40F7-DCBA-4FB6-9E1C-10684DD26EE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualTraceRoute", "VisualTraceRoute\VisualTraceRoute.csproj", "{27FB40F7-DCBA-4FB6-9E1C-10684DD26EE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
