@@ -44,9 +44,10 @@
 			this.destinationLbl = new System.Windows.Forms.Label();
 			this.dnsWorker = new System.ComponentModel.BackgroundWorker();
 			this.addressLc = new MRG.Controls.UI.LoadingCircle();
-			this.mapLc = new MRG.Controls.UI.LoadingCircle();
 			this.traceWorker = new System.ComponentModel.BackgroundWorker();
 			this.cancelBtn = new System.Windows.Forms.Button();
+			this.tracePb = new System.Windows.Forms.ProgressBar();
+			this.progressWorker = new System.ComponentModel.BackgroundWorker();
 			this.SuspendLayout();
 			// 
 			// map
@@ -190,25 +191,6 @@
 			this.addressLc.Text = "loadingCircle";
 			this.addressLc.Visible = false;
 			// 
-			// mapLc
-			// 
-			this.mapLc.Active = false;
-			this.mapLc.BackColor = System.Drawing.Color.Transparent;
-			this.mapLc.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-			this.mapLc.Color = System.Drawing.Color.DarkGray;
-			this.mapLc.InnerCircleRadius = 5;
-			this.mapLc.Location = new System.Drawing.Point(750, 453);
-			this.mapLc.Name = "mapLc";
-			this.mapLc.NumberSpoke = 12;
-			this.mapLc.OuterCircleRadius = 11;
-			this.mapLc.RotationSpeed = 100;
-			this.mapLc.Size = new System.Drawing.Size(50, 41);
-			this.mapLc.SpokeThickness = 2;
-			this.mapLc.StylePreset = MRG.Controls.UI.LoadingCircle.StylePresets.MacOSX;
-			this.mapLc.TabIndex = 8;
-			this.mapLc.Text = "mapLC";
-			this.mapLc.Visible = false;
-			// 
 			// traceWorker
 			// 
 			this.traceWorker.WorkerSupportsCancellation = true;
@@ -222,9 +204,24 @@
 			this.cancelBtn.Name = "cancelBtn";
 			this.cancelBtn.Size = new System.Drawing.Size(119, 28);
 			this.cancelBtn.TabIndex = 9;
-			this.cancelBtn.Text = "Cancel";
+			this.cancelBtn.Text = "Exit";
 			this.cancelBtn.UseVisualStyleBackColor = true;
 			this.cancelBtn.Click += new System.EventHandler(this.cancelBtn_Click);
+			// 
+			// tracePb
+			// 
+			this.tracePb.Location = new System.Drawing.Point(544, 465);
+			this.tracePb.MarqueeAnimationSpeed = 50;
+			this.tracePb.Name = "tracePb";
+			this.tracePb.Size = new System.Drawing.Size(244, 23);
+			this.tracePb.TabIndex = 10;
+			this.tracePb.Visible = false;
+			// 
+			// progressWorker
+			// 
+			this.progressWorker.WorkerSupportsCancellation = true;
+			this.progressWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.progressWorker_DoWork);
+			this.progressWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.progressWorker_RunWorkerCompleted);
 			// 
 			// TraceForm
 			// 
@@ -233,8 +230,8 @@
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelBtn;
 			this.ClientSize = new System.Drawing.Size(800, 732);
+			this.Controls.Add(this.tracePb);
 			this.Controls.Add(this.cancelBtn);
-			this.Controls.Add(this.mapLc);
 			this.Controls.Add(this.addressLc);
 			this.Controls.Add(this.destinationLbl);
 			this.Controls.Add(this.addressTb);
@@ -266,9 +263,10 @@
 		private System.Windows.Forms.Label destinationLbl;
 		private System.ComponentModel.BackgroundWorker dnsWorker;
 		private MRG.Controls.UI.LoadingCircle addressLc;
-		private MRG.Controls.UI.LoadingCircle mapLc;
 		private System.ComponentModel.BackgroundWorker traceWorker;
 		private System.Windows.Forms.Button cancelBtn;
+		private System.Windows.Forms.ProgressBar tracePb;
+		private System.ComponentModel.BackgroundWorker progressWorker;
 	}
 }
 
