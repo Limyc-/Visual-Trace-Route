@@ -37,7 +37,7 @@ namespace VisualTraceRoute
 		private void map_Load(object sender, EventArgs e)
 		{
 			map.MapProvider = GMap.NET.MapProviders.BingMapProvider.Instance;
-
+			
 			pointOverlay = new GMapOverlay(map, "Points");
 			routeOverlay = new GMapOverlay(map, "Routes");
 		}
@@ -134,7 +134,6 @@ namespace VisualTraceRoute
 				IncrementProgressBar(incrementValue);
 				Thread.Sleep(7);
 			}
-			ResetProgressBar();
 		}
 
 		private void progressWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
@@ -158,6 +157,14 @@ namespace VisualTraceRoute
 			cancelBtn.Text = "Exit";
 
 			CenterMap("Points");
+		}
+
+		private void TraceForm_Resize(object sender, EventArgs e)
+		{
+			var form = (Form)sender;
+			var oldSizeX = addressTb.Size.Width;
+			addressTb.Size = new Size(form.Size.Width - 444, addressTb.Size.Height);
+
 		}
 
 		private void AddItem(ListViewItem item)
@@ -264,6 +271,7 @@ namespace VisualTraceRoute
 							if (pingReply.Status != IPStatus.TimedOut)
 							{
 								GeoIpData data;
+								
 								if (i == 0)
 								{
 									data = GeoIp.GetLocationData();
@@ -276,6 +284,7 @@ namespace VisualTraceRoute
 									item.SubItems.Add(data.Hostname);
 									item.SubItems.Add(data.Ip.ToString());
 								}
+
 								item.SubItems.Add(stopWatch.ElapsedMilliseconds + "ms");
 								item.SubItems.Add(data.Point.Lat.ToString());
 								item.SubItems.Add(data.Point.Lng.ToString());
@@ -284,6 +293,7 @@ namespace VisualTraceRoute
 								item.SubItems.Add(data.Country);
 
 								current = data.Point;
+
 								if (pingReply.Status == IPStatus.Success)
 								{
 									PlotPoint(data.Point, -1);
@@ -309,6 +319,7 @@ namespace VisualTraceRoute
 								item.SubItems.Add("-");
 								item.SubItems.Add("-");
 							}
+
 							AddItem(item);
 						}
 						catch { }
@@ -337,6 +348,7 @@ namespace VisualTraceRoute
 			marker.Pen.Color = Color.White;
 			marker.Pen.Width = 1;
 			secondary.Pen.Width = 3;
+
 			if (hop == 1)
 			{
 				secondary.Pen.Color = Color.Lime;
@@ -362,6 +374,7 @@ namespace VisualTraceRoute
 		private void PlotRoute(PointLatLng start, PointLatLng end, long delay)
 		{
 			Color brushColor = Color.LimeGreen;
+
 			if (delay > 100)
 			{
 				brushColor = Color.Crimson;
@@ -370,23 +383,24 @@ namespace VisualTraceRoute
 			{
 				brushColor = Color.Gold;
 			}
+
 			List<PointLatLng> points = new List<PointLatLng>();
 			points.Add(start);
 			points.Add(end);
+			
 			GMapPolygon polygon = new GMapPolygon(points, "polygon");
-
 			GPoint startTest = map.FromLatLngToLocal(start);
 			GPoint endTest = map.FromLatLngToLocal(end);
+
 			LinearGradientBrush gradient = new LinearGradientBrush(new Point(startTest.X, startTest.Y), new Point(endTest.X, endTest.Y), Color.LimeGreen, Color.LimeGreen);
-
 			Pen pen = new Pen(gradient, 1f);
-
-
 			polygon.Stroke = pen;
 
 			routeOverlay.Polygons.Add(polygon);
 			map.Overlays.Add(routeOverlay);
 		}
+
+		
 
 	}
 }

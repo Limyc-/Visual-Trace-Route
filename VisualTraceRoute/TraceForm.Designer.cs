@@ -48,6 +48,16 @@
 			this.cancelBtn = new System.Windows.Forms.Button();
 			this.tracePb = new System.Windows.Forms.ProgressBar();
 			this.progressWorker = new System.ComponentModel.BackgroundWorker();
+			this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+			this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+			this.splitContainer1.Panel1.SuspendLayout();
+			this.splitContainer1.Panel2.SuspendLayout();
+			this.splitContainer1.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
+			this.splitContainer2.Panel1.SuspendLayout();
+			this.splitContainer2.Panel2.SuspendLayout();
+			this.splitContainer2.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// map
@@ -55,7 +65,7 @@
 			this.map.Bearing = 0F;
 			this.map.CanDragMap = true;
 			this.map.Cursor = System.Windows.Forms.Cursors.Default;
-			this.map.Dock = System.Windows.Forms.DockStyle.Top;
+			this.map.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.map.GrayScaleMode = false;
 			this.map.LevelsKeepInMemmory = 5;
 			this.map.Location = new System.Drawing.Point(0, 0);
@@ -67,17 +77,19 @@
 			this.map.NegativeMode = false;
 			this.map.PolygonsEnabled = true;
 			this.map.RetryLoadTile = 0;
+			this.map.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.map.RoutesEnabled = true;
 			this.map.ShowTileGridLines = false;
-			this.map.Size = new System.Drawing.Size(800, 494);
+			this.map.Size = new System.Drawing.Size(706, 360);
 			this.map.TabIndex = 0;
 			this.map.Zoom = 2D;
 			this.map.Load += new System.EventHandler(this.map_Load);
 			// 
 			// loadMapBtn
 			// 
+			this.loadMapBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.loadMapBtn.Enabled = false;
-			this.loadMapBtn.Location = new System.Drawing.Point(544, 700);
+			this.loadMapBtn.Location = new System.Drawing.Point(450, -1);
 			this.loadMapBtn.Name = "loadMapBtn";
 			this.loadMapBtn.Size = new System.Drawing.Size(119, 28);
 			this.loadMapBtn.TabIndex = 2;
@@ -97,12 +109,13 @@
             this.city,
             this.region,
             this.country});
+			this.traceInfoLv.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.traceInfoLv.FullRowSelect = true;
 			this.traceInfoLv.GridLines = true;
 			this.traceInfoLv.LabelWrap = false;
-			this.traceInfoLv.Location = new System.Drawing.Point(0, 494);
+			this.traceInfoLv.Location = new System.Drawing.Point(0, 0);
 			this.traceInfoLv.Name = "traceInfoLv";
-			this.traceInfoLv.Size = new System.Drawing.Size(800, 200);
+			this.traceInfoLv.Size = new System.Drawing.Size(706, 133);
 			this.traceInfoLv.TabIndex = 4;
 			this.traceInfoLv.TileSize = new System.Drawing.Size(150, 30);
 			this.traceInfoLv.UseCompatibleStateImageBehavior = false;
@@ -116,7 +129,7 @@
 			// hostName
 			// 
 			this.hostName.Text = "Host Name";
-			this.hostName.Width = 180;
+			this.hostName.Width = 139;
 			// 
 			// ipAddress
 			// 
@@ -139,30 +152,35 @@
 			// city
 			// 
 			this.city.Text = "City";
-			this.city.Width = 110;
+			this.city.Width = 88;
 			// 
 			// region
 			// 
 			this.region.Text = "Region";
-			this.region.Width = 100;
+			this.region.Width = 88;
 			// 
 			// country
 			// 
 			this.country.Text = "Country";
-			this.country.Width = 106;
+			this.country.Width = 88;
 			// 
 			// addressTb
 			// 
-			this.addressTb.Location = new System.Drawing.Point(139, 705);
+			this.addressTb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.addressTb.CharacterCasing = System.Windows.Forms.CharacterCasing.Lower;
+			this.addressTb.Cursor = System.Windows.Forms.Cursors.IBeam;
+			this.addressTb.Location = new System.Drawing.Point(139, 4);
 			this.addressTb.Name = "addressTb";
-			this.addressTb.Size = new System.Drawing.Size(372, 20);
+			this.addressTb.Size = new System.Drawing.Size(278, 20);
 			this.addressTb.TabIndex = 5;
+			this.addressTb.WordWrap = false;
 			this.addressTb.TextChanged += new System.EventHandler(this.addressTb_TextChanged);
 			// 
 			// destinationLbl
 			// 
+			this.destinationLbl.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.destinationLbl.AutoSize = true;
-			this.destinationLbl.Location = new System.Drawing.Point(12, 708);
+			this.destinationLbl.Location = new System.Drawing.Point(12, 7);
 			this.destinationLbl.Name = "destinationLbl";
 			this.destinationLbl.Size = new System.Drawing.Size(121, 13);
 			this.destinationLbl.TabIndex = 6;
@@ -177,9 +195,10 @@
 			// addressLc
 			// 
 			this.addressLc.Active = false;
+			this.addressLc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.addressLc.Color = System.Drawing.Color.DarkGray;
 			this.addressLc.InnerCircleRadius = 6;
-			this.addressLc.Location = new System.Drawing.Point(517, 705);
+			this.addressLc.Location = new System.Drawing.Point(423, 4);
 			this.addressLc.Name = "addressLc";
 			this.addressLc.NumberSpoke = 9;
 			this.addressLc.OuterCircleRadius = 7;
@@ -199,8 +218,9 @@
 			// 
 			// cancelBtn
 			// 
+			this.cancelBtn.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.cancelBtn.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-			this.cancelBtn.Location = new System.Drawing.Point(669, 700);
+			this.cancelBtn.Location = new System.Drawing.Point(575, -1);
 			this.cancelBtn.Name = "cancelBtn";
 			this.cancelBtn.Size = new System.Drawing.Size(119, 28);
 			this.cancelBtn.TabIndex = 9;
@@ -210,10 +230,11 @@
 			// 
 			// tracePb
 			// 
-			this.tracePb.Location = new System.Drawing.Point(544, 465);
+			this.tracePb.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.tracePb.Location = new System.Drawing.Point(519, 334);
 			this.tracePb.MarqueeAnimationSpeed = 50;
 			this.tracePb.Name = "tracePb";
-			this.tracePb.Size = new System.Drawing.Size(244, 23);
+			this.tracePb.Size = new System.Drawing.Size(175, 23);
 			this.tracePb.TabIndex = 10;
 			this.tracePb.Visible = false;
 			// 
@@ -223,25 +244,73 @@
 			this.progressWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.progressWorker_DoWork);
 			this.progressWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.progressWorker_RunWorkerCompleted);
 			// 
+			// splitContainer1
+			// 
+			this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+			this.splitContainer1.Name = "splitContainer1";
+			this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// splitContainer1.Panel1
+			// 
+			this.splitContainer1.Panel1.Controls.Add(this.tracePb);
+			this.splitContainer1.Panel1.Controls.Add(this.map);
+			// 
+			// splitContainer1.Panel2
+			// 
+			this.splitContainer1.Panel2.AutoScroll = true;
+			this.splitContainer1.Panel2.Controls.Add(this.traceInfoLv);
+			this.splitContainer1.Panel2MinSize = 70;
+			this.splitContainer1.Size = new System.Drawing.Size(706, 497);
+			this.splitContainer1.SplitterDistance = 360;
+			this.splitContainer1.TabIndex = 12;
+			// 
+			// splitContainer2
+			// 
+			this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.splitContainer2.IsSplitterFixed = true;
+			this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+			this.splitContainer2.Name = "splitContainer2";
+			this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+			// 
+			// splitContainer2.Panel1
+			// 
+			this.splitContainer2.Panel1.Controls.Add(this.splitContainer1);
+			// 
+			// splitContainer2.Panel2
+			// 
+			this.splitContainer2.Panel2.Controls.Add(this.addressTb);
+			this.splitContainer2.Panel2.Controls.Add(this.cancelBtn);
+			this.splitContainer2.Panel2.Controls.Add(this.addressLc);
+			this.splitContainer2.Panel2.Controls.Add(this.destinationLbl);
+			this.splitContainer2.Panel2.Controls.Add(this.loadMapBtn);
+			this.splitContainer2.Panel2MinSize = 30;
+			this.splitContainer2.Size = new System.Drawing.Size(706, 531);
+			this.splitContainer2.SplitterDistance = 497;
+			this.splitContainer2.TabIndex = 13;
+			// 
 			// TraceForm
 			// 
 			this.AcceptButton = this.loadMapBtn;
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.CancelButton = this.cancelBtn;
-			this.ClientSize = new System.Drawing.Size(800, 732);
-			this.Controls.Add(this.tracePb);
-			this.Controls.Add(this.cancelBtn);
-			this.Controls.Add(this.addressLc);
-			this.Controls.Add(this.destinationLbl);
-			this.Controls.Add(this.addressTb);
-			this.Controls.Add(this.traceInfoLv);
-			this.Controls.Add(this.loadMapBtn);
-			this.Controls.Add(this.map);
+			this.ClientSize = new System.Drawing.Size(706, 531);
+			this.Controls.Add(this.splitContainer2);
+			this.MinimumSize = new System.Drawing.Size(513, 38);
 			this.Name = "TraceForm";
 			this.Text = "Visual Trace Route";
+			this.Resize += new System.EventHandler(this.TraceForm_Resize);
+			this.splitContainer1.Panel1.ResumeLayout(false);
+			this.splitContainer1.Panel2.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+			this.splitContainer1.ResumeLayout(false);
+			this.splitContainer2.Panel1.ResumeLayout(false);
+			this.splitContainer2.Panel2.ResumeLayout(false);
+			this.splitContainer2.Panel2.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
+			this.splitContainer2.ResumeLayout(false);
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
 		}
 
@@ -267,6 +336,8 @@
 		private System.Windows.Forms.Button cancelBtn;
 		private System.Windows.Forms.ProgressBar tracePb;
 		private System.ComponentModel.BackgroundWorker progressWorker;
+		private System.Windows.Forms.SplitContainer splitContainer1;
+		private System.Windows.Forms.SplitContainer splitContainer2;
 	}
 }
 

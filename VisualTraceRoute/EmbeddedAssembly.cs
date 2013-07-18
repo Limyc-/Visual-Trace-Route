@@ -11,32 +11,36 @@ namespace VisualTraceRoute
 	{
 		// Version 1.3
 
-		static Dictionary<string, Assembly> dic = null;
+		static Dictionary<String, Assembly> dict = null;
 
-		public static void Load(string embeddedResource, string fileName)
+		public static void Load(String embeddedResource, String fileName)
 		{
-			if (dic == null)
-				dic = new Dictionary<string, Assembly>();
+			if (dict == null)
+			{
+				dict = new Dictionary<String, Assembly>();
+			}
 
-			byte[] ba = null;
+			byte[] data = null;
 			Assembly asm = null;
-			Assembly curAsm = Assembly.GetExecutingAssembly();
+			Assembly currentAsm = Assembly.GetExecutingAssembly();
 
-			using (Stream stm = curAsm.GetManifestResourceStream(embeddedResource))
+			using (var stream = currentAsm.GetManifestResourceStream(embeddedResource))
 			{
 				// Either the file is not existed or it is not mark as embedded resource
-				if (stm == null)
+				if (stream == null)
+				{
 					throw new Exception(embeddedResource + " is not found in Embedded Resources.");
+				}
 
 				// Get byte[] from the file from embedded resource
-				ba = new byte[(int)stm.Length];
-				stm.Read(ba, 0, (int)stm.Length);
+				data = new byte[(int)stream.Length];
+				stream.Read(data, 0, (int)stream.Length);
 				try
 				{
-					asm = Assembly.Load(ba);
+					asm = Assembly.Load(data);
 
 					// Add the assembly/dll into dictionary
-					dic.Add(asm.FullName, asm);
+					dict.Add(asm.FullName, asm);
 					return;
 				}
 				catch
@@ -47,52 +51,56 @@ namespace VisualTraceRoute
 				}
 			}
 
-			bool fileOk = false;
-			string tempFile = "";
+			bool isFileOk = false;
+			String tempFile = "";
 
 			using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
 			{
-				string fileHash = BitConverter.ToString(sha1.ComputeHash(ba)).Replace("-", string.Empty); ;
+				String fileHash = BitConverter.ToString(sha1.ComputeHash(data)).Replace("-", String.Empty); ;
 
 				tempFile = Path.GetTempPath() + fileName;
 
 				if (File.Exists(tempFile))
 				{
 					byte[] bb = File.ReadAllBytes(tempFile);
-					string fileHash2 = BitConverter.ToString(sha1.ComputeHash(bb)).Replace("-", string.Empty);
+					String fileHash2 = BitConverter.ToString(sha1.ComputeHash(bb)).Replace("-", String.Empty);
 
 					if (fileHash == fileHash2)
 					{
-						fileOk = true;
+						isFileOk = true;
 					}
 					else
 					{
-						fileOk = false;
+						isFileOk = false;
 					}
 				}
 				else
 				{
-					fileOk = false;
+					isFileOk = false;
 				}
 			}
 
-			if (!fileOk)
+			if (!isFileOk)
 			{
-				System.IO.File.WriteAllBytes(tempFile, ba);
+				System.IO.File.WriteAllBytes(tempFile, data);
 			}
 
 			asm = Assembly.LoadFile(tempFile);
 
-			dic.Add(asm.FullName, asm);
+			dict.Add(asm.FullName, asm);
 		}
 
-		public static Assembly Get(string assemblyFullName)
+		public static Assembly Get(String assemblyFullName)
 		{
-			if (dic == null || dic.Count == 0)
+			if (dict == null || dict.Count == 0)
+			{
 				return null;
+			}
 
-			if (dic.ContainsKey(assemblyFullName))
-				return dic[assemblyFullName];
+			if (dict.ContainsKey(assemblyFullName))
+			{
+				return dict[assemblyFullName];
+			}
 
 			return null;
 
