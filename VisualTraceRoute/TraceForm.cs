@@ -34,19 +34,11 @@ namespace VisualTraceRoute
 			InitializeComponent();
 		}
 
-		private void map_Load(object sender, EventArgs e)
+		private void addressTextBox_TextChanged(object sender, EventArgs e)
 		{
-			map.MapProvider = GMap.NET.MapProviders.BingMapProvider.Instance;
-			
-			pointOverlay = new GMapOverlay(map, "Points");
-			routeOverlay = new GMapOverlay(map, "Routes");
-		}
-
-		private void addressTb_TextChanged(object sender, EventArgs e)
-		{
-			loadMapBtn.Enabled = false;
-			addressLc.Visible = true;
-			addressLc.Active = true;
+			loadMapButton.Enabled = false;
+			addressLoadingCircle.Visible = true;
+			addressLoadingCircle.Active = true;
 
 			if (dnsWorker.IsBusy)
 			{
@@ -61,7 +53,7 @@ namespace VisualTraceRoute
 			dnsWorker.RunWorkerAsync((TextBox)sender);
 		}
 
-		private void cancelBtn_Click(object sender, EventArgs e)
+		private void cancelButton_Click(object sender, EventArgs e)
 		{
 			if (traceWorker.IsBusy)
 			{
@@ -76,9 +68,9 @@ namespace VisualTraceRoute
 
 		private void loadMap_Click(object sender, EventArgs e)
 		{
-			tracePb.Visible = true;
-			loadMapBtn.Enabled = false;
-			addressTb.Enabled = false;
+			traceProgressBar.Visible = true;
+			loadMapButton.Enabled = false;
+			addressTextBox.Enabled = false;
 			map.Enabled = false;
 			cancelBtn.Text = "Cancel";
 			incrementValue = 1;
@@ -107,27 +99,35 @@ namespace VisualTraceRoute
 		{
 			if ((bool)e.Result)
 			{
-				addressTb.ForeColor = Color.Black;
-				loadMapBtn.Enabled = true;
+				addressTextBox.ForeColor = Color.Black;
+				loadMapButton.Enabled = true;
 			}
 			else
 			{
-				addressTb.ForeColor = Color.Red;
-				loadMapBtn.Enabled = false;
+				addressTextBox.ForeColor = Color.Red;
+				loadMapButton.Enabled = false;
 			}
-			addressLc.Visible = false;
-			addressLc.Active = false;
+			addressLoadingCircle.Visible = false;
+			addressLoadingCircle.Active = false;
+		}
+
+		private void map_Load(object sender, EventArgs e)
+		{
+			map.MapProvider = GMap.NET.MapProviders.BingMapProvider.Instance;
+
+			pointOverlay = new GMapOverlay(map, "Points");
+			routeOverlay = new GMapOverlay(map, "Routes");
 		}
 
 		private void progressWorker_DoWork(object sender, DoWorkEventArgs e)
 		{
 			while (!progressWorker.CancellationPending)
 			{
-				if (tracePb.Value >= tracePb.Maximum && incrementValue == 1)
+				if (traceProgressBar.Value >= traceProgressBar.Maximum && incrementValue == 1)
 				{
 					ResetProgressBar();
 				}
-				else if (tracePb.Value <= tracePb.Minimum && incrementValue == -1)
+				else if (traceProgressBar.Value <= traceProgressBar.Minimum && incrementValue == -1)
 				{
 					ResetProgressBar(100);
 				}
@@ -150,20 +150,25 @@ namespace VisualTraceRoute
 		{
 			progressWorker.CancelAsync();
 
-			tracePb.Visible = false;
+			traceProgressBar.Visible = false;
 			map.Enabled = true;
-			loadMapBtn.Enabled = true;
-			addressTb.Enabled = true;
+			loadMapButton.Enabled = true;
+			addressTextBox.Enabled = true;
 			cancelBtn.Text = "Exit";
 
 			CenterMap("Points");
 		}
 
+		private void TraceForm_Load(object sender, EventArgs e)
+		{
+			this.CenterToScreen();
+		}
+
 		private void TraceForm_Resize(object sender, EventArgs e)
 		{
 			var form = (Form)sender;
-			var oldSizeX = addressTb.Size.Width;
-			addressTb.Size = new Size(form.Size.Width - 444, addressTb.Size.Height);
+			var oldSizeX = addressTextBox.Size.Width;
+			addressTextBox.Size = new Size(form.Size.Width - 444, addressTextBox.Size.Height);
 
 		}
 
@@ -173,8 +178,8 @@ namespace VisualTraceRoute
 			{
 				Invoke(new Action(() =>
 				{
-					traceInfoLv.Items.Add(item);
-					traceInfoLv.Items[traceInfoLv.Items.Count - 1].EnsureVisible();
+					traceInfoListView.Items.Add(item);
+					traceInfoListView.Items[traceInfoListView.Items.Count - 1].EnsureVisible();
 				}));
 			}
 			catch { }
@@ -189,7 +194,7 @@ namespace VisualTraceRoute
 		{
 			try
 			{
-				Invoke(new Action(() => { tracePb.Increment(value); }));
+				Invoke(new Action(() => { traceProgressBar.Increment(value); }));
 			}
 			catch { }
 		}
@@ -222,7 +227,7 @@ namespace VisualTraceRoute
 			{
 				Invoke(new Action(() =>
 					{
-						traceInfoLv.Items.Clear();
+						traceInfoListView.Items.Clear();
 						map.Overlays.Clear();
 						pointOverlay.Markers.Clear();
 						routeOverlay.Polygons.Clear();
@@ -236,7 +241,7 @@ namespace VisualTraceRoute
 
 		private void ResetProgressBar(int value = 0)
 		{
-			Invoke(new Action(() => { tracePb.Value = value; }));
+			Invoke(new Action(() => { traceProgressBar.Value = value; }));
 		}
 
 		private void TraceRoute(IPAddress target)
@@ -399,8 +404,5 @@ namespace VisualTraceRoute
 			routeOverlay.Polygons.Add(polygon);
 			map.Overlays.Add(routeOverlay);
 		}
-
-		
-
 	}
 }
